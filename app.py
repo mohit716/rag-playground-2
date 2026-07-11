@@ -79,6 +79,13 @@ def storeVector(text, embedding):
     return vector_record
 
 
+def retrieveDocument():
+    if not vector_store:
+        return None
+
+    return vector_store[0]
+
+
 if __name__=="__main__":
 
     pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
@@ -95,6 +102,17 @@ if __name__=="__main__":
         embedding=document_embedding
     )
 
-    print("Document stored successfully.")
-    print("Number of stored documents:", len(vector_store))
-    print("Number of embedding values:", len(stored_document["embedding"]))
+     # Step 4: Retrieve document
+    retrieval_result = retrieveDocument()
+
+    if retrieval_result:
+        print("Document retrieved successfully.")
+        print("Retrieved text:")
+        print(retrieval_result["text"])
+
+        print(
+            "Embedding size:",
+            len(retrieval_result["embedding"])
+        )
+    else:
+        print("No document found.")

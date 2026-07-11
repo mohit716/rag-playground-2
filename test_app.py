@@ -8,6 +8,8 @@ from app import convert_to_embedding
 
 from app import storeVector, vector_store
 
+from app import retrieveDocument, storeVector, vector_store
+
 
 def test_extract_text_from_pdf():
     pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
@@ -76,3 +78,34 @@ def test_store_vector():
 
     assert len(vector_store) == 1
     assert vector_store[0] == result
+
+
+
+from app import retrieveDocument, storeVector, vector_store
+
+
+def test_retrieve_document_when_store_is_empty():
+    vector_store.clear()
+
+    result = retrieveDocument()
+
+    assert result is None
+
+
+def test_retrieve_document_returns_first_record():
+    vector_store.clear()
+
+    first_record = storeVector(
+        "First document",
+        [0.1, 0.2, 0.3]
+    )
+
+    storeVector(
+        "Second document",
+        [0.4, 0.5, 0.6]
+    )
+
+    result = retrieveDocument()
+
+    assert result == first_record
+    assert result["text"] == "First document"
