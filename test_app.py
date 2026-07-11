@@ -6,6 +6,7 @@ from app import extractTextFromPdf
 
 from app import convert_to_embedding
 
+from app import storeVector, vector_store
 
 
 def test_extract_text_from_pdf():
@@ -56,3 +57,22 @@ def test_convert_to_embedding(mock_client):
         model="text-embedding-3-small",
         input="Sample text"
     )
+
+
+
+
+def test_store_vector():
+    vector_store.clear()
+
+    text = "Sample document text"
+    embedding = [0.1, 0.2, 0.3]
+
+    result = storeVector(text, embedding)
+
+    assert result == {
+        "text": "Sample document text",
+        "embedding": [0.1, 0.2, 0.3]
+    }
+
+    assert len(vector_store) == 1
+    assert vector_store[0] == result

@@ -1,3 +1,5 @@
+
+
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
@@ -7,6 +9,8 @@ from pypdf import PdfReader
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+vector_store = []
+
 
 # Send message to LLM
 def sayHiToLLM():
@@ -64,6 +68,16 @@ def convert_to_embedding(text):
 
     return embedding
 
+def storeVector(text, embedding):
+    vector_record = {
+        "text": text,
+        "embedding": embedding
+    }
+
+    vector_store.append(vector_record)
+
+    return vector_record
+
 
 if __name__=="__main__":
 
@@ -75,5 +89,12 @@ if __name__=="__main__":
     # Step 2: Convert text into an embedding
     document_embedding = convert_to_embedding(pdf_text)
 
-    print(document_embedding)
-    print("Number of values:", len(document_embedding))
+    # Step 3: Store text and embedding
+    stored_document = storeVector(
+        text=pdf_text,
+        embedding=document_embedding
+    )
+
+    print("Document stored successfully.")
+    print("Number of stored documents:", len(vector_store))
+    print("Number of embedding values:", len(stored_document["embedding"]))
