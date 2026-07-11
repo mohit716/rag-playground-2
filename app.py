@@ -54,11 +54,11 @@ In 3-4 sentences of plain prose, tell me what this document is about and the ove
 
     return response.output_text
 
+if __name__=="__main__":
+    pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
 
-pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
+    pdf_text = extractTextFromPdf(pdf_path)
 
-pdf_text = extractTextFromPdf(pdf_path)
+    summary = summarizePdfText(pdf_text)
 
-summary = summarizePdfText(pdf_text)
-
-print(summary)
+    print(summary)
