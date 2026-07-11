@@ -36,8 +36,29 @@ def extractTextFromPdf(pdf_path):
 
     return pdf_text
 
+
+def summarizePdfText(pdf_text):
+    response = client.responses.create(
+        model="gpt-5-nano",
+        input=[
+            {
+                "role": "user",
+                "content": f"""
+In 3-4 sentences of plain prose, tell me what this document is about and the overall approach it takes. Do not use bullet points and do not list the phases.
+
+{pdf_text}
+"""
+            }
+        ]
+    )
+
+    return response.output_text
+
+
 pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
 
-text = extractTextFromPdf(pdf_path)
+pdf_text = extractTextFromPdf(pdf_path)
 
-print(text)
+summary = summarizePdfText(pdf_text)
+
+print(summary)
