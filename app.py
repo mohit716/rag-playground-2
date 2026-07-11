@@ -54,11 +54,26 @@ In 3-4 sentences of plain prose, tell me what this document is about and the ove
 
     return response.output_text
 
+def convert_to_embedding(text):
+    response = client.embeddings.create(
+        model="text-embedding-3-small",
+        input=text
+    )
+
+    embedding = response.data[0].embedding
+
+    return embedding
+
+
 if __name__=="__main__":
+
     pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
 
-    pdf_text = extractTextFromPdf(pdf_path)
+    # Step 1: Extract text from PDF
+    pdf_text= extractTextFromPdf(pdf_path)
 
-    summary = summarizePdfText(pdf_text)
+    # Step 2: Convert text into an embedding
+    document_embedding = convert_to_embedding(pdf_text)
 
-    print(summary)
+    print(document_embedding)
+    print("Number of values:", len(document_embedding))

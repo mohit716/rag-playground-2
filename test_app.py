@@ -4,6 +4,9 @@ from app import summarizePdfText
 
 from app import extractTextFromPdf
 
+from app import convert_to_embedding
+
+
 
 def test_extract_text_from_pdf():
     pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
@@ -33,3 +36,23 @@ def test_summarize_pdf_text(mock_client):
     assert call_arguments["model"] == "gpt-5-nano"
     assert call_arguments["input"][0]["role"] == "user"
     assert "Sample PDF text" in call_arguments["input"][0]["content"]
+
+
+
+
+
+@patch("app.client")
+def test_convert_to_embedding(mock_client):
+    mock_response = MagicMock()
+    mock_response.data[0].embedding = [0.1, 0.2, 0.3]
+
+    mock_client.embeddings.create.return_value = mock_response
+
+    result = convert_to_embedding("Sample text")
+
+    assert result == [0.1, 0.2, 0.3]
+
+    mock_client.embeddings.create.assert_called_once_with(
+        model="text-embedding-3-small",
+        input="Sample text"
+    )
