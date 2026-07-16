@@ -40,6 +40,14 @@ def extractTextFromPdf(pdf_path):
 
     return pdf_text
 
+def break_text(text, chunk_size=500):
+    chunks = []
+
+    for start in range(0, len(text), chunk_size):
+        chunk = text[start:start + chunk_size]
+        chunks.append(chunk)
+
+    return chunks
 
 def summarizePdfText(pdf_text):
     response = client.responses.create(
@@ -94,23 +102,35 @@ if __name__=="__main__":
     # Step 1: Extract text from PDF
     pdf_text= extractTextFromPdf(pdf_path)
 
-    # Step 2: Convert text into an embedding
-    document_embedding = convert_to_embedding(pdf_text)
-
-    # Step 3: Store text and embedding
-    stored_document = storeVector(
-        text=pdf_text,
-        embedding=document_embedding
-    )
-    print("Stored document:")
-    print(stored_document["text"][:500])
+     # Step 2: Break text into chunks
+    chunks = break_text(pdf_text)
+    print("Number of chunks:", len(chunks))
     print()
 
-    print("Embedding preview:")
-    print(stored_document["embedding"][:10])
+    # Step 3: Convert each chunk into an embedding and store it
+    for chunk in chunks:
+        chunk_embedding = convert_to_embedding(chunk)
+        storeVector(
+            text=chunk,
+            embedding=chunk_embedding
+        )
+
+
+        
+    print("Stored records:", len(vector_store))
     print()
 
-     # Step 4: Retrieve document
+    # Preview the first stored chunk
+    print("First stored chunk:")
+    print(vector_store[0]["text"])
+    print()
+
+    print("First embedding preview:")
+    print(vector_store[0]["embedding"][:10])
+    print()
+
+  
+     # Step 4: Retrieve a document
     retrieval_result = retrieveDocument()
 
     if retrieval_result:

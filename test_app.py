@@ -1,14 +1,14 @@
 from unittest.mock import MagicMock, patch
 
-from app import summarizePdfText
-
-from app import extractTextFromPdf
-
-from app import convert_to_embedding
-
-from app import storeVector, vector_store
-
-from app import retrieveDocument, storeVector, vector_store
+from app import (
+    summarizePdfText,
+    extractTextFromPdf,
+    convert_to_embedding,
+    storeVector,
+    retrieveDocument,
+    break_text,
+    vector_store,
+)
 
 
 def test_extract_text_from_pdf():
@@ -81,8 +81,6 @@ def test_store_vector():
 
 
 
-from app import retrieveDocument, storeVector, vector_store
-
 
 def test_retrieve_document_when_store_is_empty():
     vector_store.clear()
@@ -109,3 +107,39 @@ def test_retrieve_document_returns_first_record():
 
     assert result == first_record
     assert result["text"] == "First document"
+
+
+
+
+def test_break_text_into_chunks():
+    text = "abcdefghij"
+
+    chunks = break_text(text, chunk_size=4)
+
+    assert chunks == [
+        "abcd",
+        "efgh",
+        "ij"
+    ]
+
+
+def test_break_text_when_text_is_smaller_than_chunk_size():
+    text = "hello"
+
+    chunks = break_text(text, chunk_size=10)
+
+    assert chunks == ["hello"]
+
+
+def test_break_text_with_empty_text():
+    chunks = break_text("", chunk_size=10)
+
+    assert chunks == []
+
+
+def test_break_text_chunks_do_not_exceed_chunk_size():
+    text = "This is some sample text for chunking."
+
+    chunks = break_text(text, chunk_size=10)
+
+    assert all(len(chunk) <= 10 for chunk in chunks)
