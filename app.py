@@ -4,6 +4,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 from pypdf import PdfReader
+import math
 
 # Load API key from .env
 load_dotenv()
@@ -48,6 +49,57 @@ def break_text(text, chunk_size=500):
         chunks.append(chunk)
 
     return chunks
+
+
+
+def cosine_similarity(vector_a, vector_b):
+    dot_product = sum(
+        a * b for a, b in zip(vector_a, vector_b)
+    )
+
+    magnitude_a = math.sqrt(
+        sum(a * a for a in vector_a)
+    )
+
+    magnitude_b = math.sqrt(
+        sum(b * b for b in vector_b)
+    )
+
+    if magnitude_a == 0 or magnitude_b == 0:
+        return 0.0
+
+    return dot_product / (magnitude_a * magnitude_b)
+
+
+
+def search_right_chunks(query, top_k=1):
+    if not vector_store:
+        return []
+
+    query_embedding = convert_to_embedding(query)
+
+    scored_chunks = []
+
+    for record in vector_store:
+        similarity_score = cosine_similarity(
+            query_embedding,
+            record["embedding"]
+        )
+
+        scored_chunks.append({
+            "text": record["text"],
+            "embedding": record["embedding"],
+            "score": similarity_score
+        })
+
+    scored_chunks.sort(
+        key=lambda record: record["score"],
+        reverse=True
+    )
+
+    return scored_chunks[:top_k]
+
+
 
 def summarizePdfText(pdf_text):
     response = client.responses.create(
@@ -130,17 +182,27 @@ if __name__=="__main__":
     print()
 
   
-     # Step 4: Retrieve a document
-    retrieval_result = retrieveDocument()
+     # Step 4: Ask a question
+    query = "Under what circumstances can the employment agreement be terminated immediately, and how much notice is normally required?"
 
-    if retrieval_result:
-        print("Document retrieved successfully.")
-        print("Retrieved text:")
-        print(retrieval_result["text"])
+    # Step 5: Search for the most relevant chunks
+    retrieved_chunks = search_right_chunks(
+        query=query,
+        top_k=2
+    )
 
-        print(
-            "Embedding size:",
-            len(retrieval_result["embedding"])
-        )
+    if retrieved_chunks:
+        print("Relevant chunks found:")
+        print()
+
+        for index, result in enumerate(retrieved_chunks):
+            print(f"Result {index + 1}:")
+            print("Similarity score:", result["score"])
+            print("Retrieved text:")
+            print(result["text"])
+            print()
+            print()
     else:
-        print("No document found.")
+        print("No relevant chunks found.")
+
+    
