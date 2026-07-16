@@ -88,7 +88,8 @@ def retrieveDocument():
 
 if __name__=="__main__":
 
-    pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
+    # Step 0: Load the PDF
+    pdf_path = r"C:\Users\mohit\rag-playground-2\Employment Agreement Excerpt.pdf"
 
     # Step 1: Extract text from PDF
     pdf_text= extractTextFromPdf(pdf_path)
@@ -101,6 +102,13 @@ if __name__=="__main__":
         text=pdf_text,
         embedding=document_embedding
     )
+    print("Stored document:")
+    print(stored_document["text"][:500])
+    print()
+
+    print("Embedding preview:")
+    print(stored_document["embedding"][:10])
+    print()
 
      # Step 4: Retrieve document
     retrieval_result = retrieveDocument()
