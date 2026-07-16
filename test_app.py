@@ -12,7 +12,7 @@ from app import retrieveDocument, storeVector, vector_store
 
 
 def test_extract_text_from_pdf():
-    pdf_path = r"C:\Users\mohit\Downloads\project-plan.pdf"
+    pdf_path = r"C:\Users\mohit\rag-playground-2\Employment Agreement Excerpt.pdf"
 
     text = extractTextFromPdf(pdf_path)
 
